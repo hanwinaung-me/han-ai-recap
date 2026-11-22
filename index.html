@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="my">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#11111b">
+<title>HAN AI Recap Studio</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<style>
+:root{color-scheme:dark;--bg:#101018;--panel:#1b1b29;--line:#343449;--purple:#9b7bff;--muted:#b8b5c9}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#27203e,#101018 48%);font-family:system-ui,"Noto Sans Myanmar",sans-serif;color:#f7f4ff}
+main{max-width:760px;margin:auto;padding:20px 14px 50px}.brand{text-align:center;padding:24px 10px}.brand h1{font-size:42px;letter-spacing:8px;margin:0;color:#c5b4ff}.brand p{color:var(--muted);font-size:12px;letter-spacing:2px}
+.card{background:#1b1b29eF;border:1px solid var(--line);border-radius:18px;padding:17px;margin:13px 0;box-shadow:0 12px 36px #0004}
+h2{font-size:17px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px;line-height:1.6}
+input,select,textarea,button{font:inherit}input[type=text],select,textarea{width:100%;background:#11111b;color:white;border:1px solid #46445e;border-radius:11px;padding:12px;margin:6px 0 12px}
+input[type=file]{width:100%;padding:12px;background:#11111b;border:1px dashed #62558b;border-radius:12px;margin:7px 0 12px}
+button{border:0;border-radius:12px;background:linear-gradient(110deg,#7c5cff,#b06bff);color:white;padding:13px 16px;font-weight:700;width:100%;margin:5px 0;cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#343149}.danger{background:#743c55}
+.progress{height:9px;background:#343149;border-radius:20px;overflow:hidden;margin:10px 0}.bar{height:100%;width:0;background:#a78bfa;transition:width .2s}
+#status{white-space:pre-wrap;background:#11111b;border-radius:10px;padding:12px;color:#d7ceff;font-size:13px;min-height:45px}
+textarea#result{min-height:300px;line-height:1.8}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+a{color:#c7b5ff}.pill{display:inline-block;padding:4px 9px;border-radius:30px;background:#332a50;color:#d8caff;font-size:11px}
+small{color:var(--muted)}@media(max-width:480px){.row{grid-template-columns:1fr}.brand h1{font-size:36px}}
+</style>
+</head>
+<body><main>
+<header class="brand"><h1>HAN</h1><p>AI STORY RECAP STUDIO · MYANMAR</p><span class="pill">BETA · GEMINI POWERED</span></header>
+<section class="card">
+<h2>၁။ မူရင်းဗီဒီယို Upload</h2>
+<p class="muted">၂ နာရီဗီဒီယိုကို ၂၀–၃၀ မိနစ်စီ အပိုင်းခွဲပြီး တစ်ပိုင်းချင်းစီတင်ပါ။ ဖုန်း/အင်တာနက်အခြေအနေအလိုက် အချိန်ကြာနိုင်ပါတယ်။</p>
+<input id="video" type="file" accept="video/mp4,video/quicktime,video/webm">
+<div class="row"><div><small>ဇာတ်လမ်းအမည်</small><input id="title" type="text" placeholder="ဥပမာ - The Reborn Princess"></div><div><small>Recap ကြာချိန် (မိနစ်)</small><select id="minutes"><option>5</option><option selected>8</option><option>10</option><option>15</option></select></div></div>
+<button id="uploadBtn">ဗီဒီယို Upload စတင်မယ်</button><div class="progress"><div class="bar" id="bar"></div></div><div id="status">စတင်ရန် ဗီဒီယိုရွေးပါ။</div>
+</section>
+<section class="card">
+<h2>၂။ Gemini Analysis</h2>
+<p class="muted">Upload ပြီးဆုံးပြီး Gemini က file ကို ACTIVE လို့ပြမှ Analysis စတင်ပါမယ်။</p>
+<button id="analyzeBtn" disabled>မြန်မာ Recap Script ဖန်တီးမယ်</button>
+</section>
+<section class="card">
+<h2>၃။ ကိုယ်ပိုင် Script</h2>
+<textarea id="result" placeholder="Gemini ဖန်တီးပေးသော မြန်မာဇာတ်ကြောင်း ဒီနေရာမှာပေါ်လာပါမယ်။ ပြန်ပြင်နိုင်ပါတယ်။"></textarea>
+<div class="row"><button id="copyBtn" class="secondary">စာသားကူးယူမယ်</button><button id="downloadBtn" class="secondary">TXT ဒေါင်းလုဒ်</button></div>
+<p class="muted">ဤ Beta ဗားရှင်းသည် Script ထုတ်ပေးခြင်းအထိ လုပ်ဆောင်သည်။ မြန်မာ TTS၊ Subtitle timing၊ Video auto-edit နှင့် MP4 export ကို နောက်အဆင့်တွင် ထည့်သွင်းရမည်။</p>
+</section>
+<section class="card">
+<h2>လုံခြုံရေးနှင့် အသုံးပြုမှု</h2>
+<p class="muted">Gemini API Key ကို Browser ထဲ မထည့်ပါနှင့်။ Cloudflare Worker Secret အဖြစ်သာ သိမ်းပါ။ မူပိုင်ခွင့်ရှိနိုင်သော ဇာတ်လမ်းများကို အသုံးပြုခွင့်ရှိမှသာ တင်ပါ။ AI recap ပြုလုပ်ခြင်းက Copyright/YouTube Monetization ကို အလိုအလျောက် အာမမခံပါ။</p>
+</section>
+</main>
+<script>
+let currentFile=null, uploaded=null;
+const $=id=>document.getElementById(id);
+function status(s){$("status").textContent=s}
+async function api(path,opts={}){const r=await fetch(path,opts);const t=await r.text();let d;try{d=JSON.parse(t)}catch{d={error:t}}if(!r.ok)throw new Error(d.error?.message||d.error||`HTTP ${r.status}`);return d}
+$("video").addEventListener("change",e=>{currentFile=e.target.files[0];uploaded=null;$("analyzeBtn").disabled=true;$("bar").style.width="0%";status(currentFile?`${currentFile.name}\n${(currentFile.size/1024/1024).toFixed(1)} MB`:"ဗီဒီယိုမရွေးရသေးပါ။")});
+$("uploadBtn").onclick=async()=>{
+ if(!currentFile)return status("ဗီဒီယိုအရင်ရွေးပါ။");
+ if(!["video/mp4","video/quicktime","video/webm"].includes(currentFile.type))return status("MP4, MOV သို့မဟုတ် WEBM ဖိုင်သာရွေးပါ။");
+ $("uploadBtn").disabled=true;
+ try{
+  status("Gemini upload session ဖန်တီးနေသည်...");
+  const init=await api("/api/upload/start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({size:currentFile.size,mimeType:currentFile.type,displayName:currentFile.name})});
+  const chunkSize=4*1024*1024;let offset=0;let fileInfo=null;
+  while(offset<currentFile.size){
+   const end=Math.min(offset+chunkSize,currentFile.size),blob=currentFile.slice(offset,end),isFinal=end===currentFile.size;
+   status(`Upload လုပ်နေသည် ${(100*offset/currentFile.size).toFixed(1)}%`);
+   let tries=0,resp;
+   while(true){
+    try{
+     resp=await fetch("/api/upload/chunk",{method:"POST",headers:{"X-Upload-Url":init.uploadUrl,"X-Upload-Offset":String(offset),"X-Upload-Final":String(isFinal),"X-Upload-Mime":currentFile.type},body:blob});
+     if(!resp.ok)throw new Error(await resp.text());break;
+    }catch(err){if(tries>=2)throw err;await new Promise(r=>setTimeout(r,tries===0?10000:20000));tries++;}
+   }
+   if(isFinal)fileInfo=await resp.json();
+   offset=end;$("bar").style.width=(100*offset/currentFile.size)+"%";
+  }
+  if(!fileInfo?.file?.name)throw new Error("Gemini file response မရရှိပါ။");
+  status("Gemini က ဗီဒီယိုကို စစ်ဆေးနေသည်...");
+  let meta;
+  for(let i=0;i<30;i++){meta=await api("/api/file/status",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:fileInfo.file.name})});if(meta.state==="ACTIVE")break;if(meta.state==="FAILED")throw new Error("Gemini video processing failed.");await new Promise(r=>setTimeout(r,10000));}
+  if(meta?.state!=="ACTIVE")throw new Error("Processing အချိန်ကြာနေသည်။ နောက်မှ status ပြန်စစ်ပါ။");
+  uploaded=meta;$("analyzeBtn").disabled=false;status("Upload ပြီးပါပြီ။ Gemini Analysis လုပ်နိုင်ပါပြီ။");
+ }catch(e){status("အမှား: "+e.message+"\nအင်တာနက်စစ်ပြီး ပြန်စမ်းပါ။");}
+ finally{$("uploadBtn").disabled=false;}
+};
+$("analyzeBtn").onclick=async()=>{
+ if(!uploaded)return;
+ $("analyzeBtn").disabled=true;status("မြန်မာ Recap Script ဖန်တီးနေသည်...");
+ try{
+  const d=await api("/api/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fileUri:uploaded.uri,mimeType:uploaded.mimeType,storyTitle:$("title").value,targetMinutes:$("minutes").value,voiceStyle:"နွေးထွေးပြီး စိတ်ဝင်စားဖွယ် မြန်မာဇာတ်လမ်းပြောဟန်"})});
+  const text=(d.candidates||[]).flatMap(c=>c.content?.parts||[]).map(p=>p.text||"").join("\n");
+  if(!text)throw new Error("Gemini မှ စာသားမရရှိပါ။");
+  $("result").value=text;status("အောင်မြင်ပါပြီ။ Script ကို ပြင်ဆင်ပြီး TXT အဖြစ် ဒေါင်းလုဒ်လုပ်နိုင်ပါပြီ။");
+ }catch(e){status("Analysis အမှား: "+e.message);}
+ finally{$("analyzeBtn").disabled=false;}
+};
+$("copyBtn").onclick=async()=>{await navigator.clipboard.writeText($("result").value);status("စာသားကူးယူပြီးပါပြီ။")};
+$("downloadBtn").onclick=()=>{const a=document.createElement("a"),u=URL.createObjectURL(new Blob([$("result").value],{type:"text/plain;charset=utf-8"}));a.href=u;a.download="HAN-Myanmar-Recap.txt";a.click();URL.revokeObjectURL(u)};
+</script></body></html>
