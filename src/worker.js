@@ -10,6 +10,34 @@ async function geminiError(response) {
   return json({ error: body || "Gemini API error" }, response.status);
 }
 
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchWithRetry(url, options) {
+  let response;
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      response = await fetch(url, options);
+
+      if (response.ok) return response;
+
+      const retryable = [429, 500, 502, 503, 504];
+
+      if (!retryable.includes(response.status)) {
+        return response;
+      }
+    } catch (error) {
+      if (attempt === 2) throw error;
+    }
+
+    if (attempt < 2) {
+      await wait(attempt === 0 ? 10000 : 20000);
+    }
+  }
+
+  return response;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -17,7 +45,10 @@ export default {
     const key = env.GEMINI_API_KEY;
 
     if (path === "/api/health") {
-      return json({ app: "HAN AI RECAP", status: "online" });
+      return json({
+        app: "HAN AI RECAP",
+        status: "online"
+      });
     }
 
     if (!path.startsWith("/api/")) {
@@ -64,6 +95,7 @@ export default {
         if (!response.ok) return geminiError(response);
 
         const uploadUrl = response.headers.get("x-goog-upload-url");
+
         if (!uploadUrl) {
           return json({ error: "Gemini upload URL မရရှိပါ။" }, 502);
         }
@@ -78,6 +110,7 @@ export default {
         const mimeType = request.headers.get("X-Upload-Mime");
 
         let target;
+
         try {
           target = new URL(uploadUrl);
         } catch {
@@ -92,8 +125,10 @@ export default {
           return json({ error: "Upload URL ကို ခွင့်မပြုပါ။" }, 400);
         }
 
-        if (!/^\d+$/.test(offset || "") ||
-            !["video/mp4", "video/quicktime", "video/webm"].includes(mimeType)) {
+        if (
+          !/^\d+$/.test(offset || "") ||
+          !["video/mp4", "video/quicktime", "video/webm"].includes(mimeType)
+        ) {
           return json({ error: "Upload header မမှန်ပါ။" }, 400);
         }
 
@@ -168,26 +203,28 @@ export default {
 Script သာ ပြန်ပေးပါ။
 `;
 
-        const response = await fetch(
-          `${GEMINI_BASE}/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(key)}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  {
-                    file_data: {
-                      mime_type: data.mimeType,
-                      file_uri: data.fileUri
-                    }
-                  },
-                  { text: prompt }
-                ]
-              }]
-            })
-          }
-        );
+        const apiUrl =
+          `${GEMINI_BASE}/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(key)}`;
+
+        const payload = {
+          contents: [{
+            parts: [
+              {
+                file_data: {
+                  mime_type: data.mimeType,
+                  file_uri: data.fileUri
+                }
+              },
+              { text: prompt }
+            ]
+          }]
+        };
+
+        const response = await fetchWithRetry(apiUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
 
         if (!response.ok) return geminiError(response);
 
@@ -200,7 +237,9 @@ Script သာ ပြန်ပေးပါ။
       return json({ error: "API route not found" }, 404);
 
     } catch (error) {
-      return json({ error: error.message || "Server error" }, 500);
+      return json({
+        error: error.message || "Server error"
+      }, 500);
     }
   }
 };
