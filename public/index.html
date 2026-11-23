@@ -60,7 +60,7 @@ $("uploadBtn").onclick=async()=>{
  try{
   status("Gemini upload session ဖန်တီးနေသည်...");
   const init=await api("/api/upload/start",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({size:currentFile.size,mimeType:currentFile.type,displayName:currentFile.name})});
-  const chunkSize=4*1024*1024;let offset=0;let fileInfo=null;
+  const chunkSize=8*1024*1024;let offset=0;let fileInfo=null;
   while(offset<currentFile.size){
    const end=Math.min(offset+chunkSize,currentFile.size),blob=currentFile.slice(offset,end),isFinal=end===currentFile.size;
    status(`Upload လုပ်နေသည် ${(100*offset/currentFile.size).toFixed(1)}%`);
