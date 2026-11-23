@@ -169,7 +169,7 @@ Script သာ ပြန်ပေးပါ။
 `;
 
         const response = await fetch(
-          `${GEMINI_BASE}/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`,
+          `${GEMINI_BASE}/v1beta/models/gemini-3.8-flash:generateContent?key=${encodeURIComponent(key)}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
